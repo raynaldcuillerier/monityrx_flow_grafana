@@ -1,0 +1,79 @@
+# Liste des règles de mapping entre les données et le SVG
+mappings:
+  # Règle 1: Colorer les composants principaux en fonction de leur statut
+  # On utilise le 'fill' pour changer la couleur de fond des icônes/formes
+  - type: series-to-color
+    series: kafka_status
+    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-19"] path'
+    thresholds:
+      - { value: 0, color: '#73BF69' } # Vert = OK
+      - { value: 1, color: '#F2CC0C' } # Jaune = Warning
+      - { value: 2, color: '#F2495C' } # Rouge = Critical
+
+  - type: series-to-color
+    series: coraline_status
+    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-21"] path'
+    thresholds:
+      - { value: 0, color: '#73BF69' }
+      - { value: 1, color: '#F2CC0C' }
+      - { value: 2, color: '#F2495C' }
+
+  - type: series-to-color
+    series: elk_status
+    # Pour les formes complexes, on peut cibler tous les 'path' à l'intérieur du groupe
+    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-25"] path'
+    thresholds:
+      - { value: 0, color: '#73BF69' }
+      - { value: 1, color: '#F2CC0C' }
+      - { value: 2, color: '#F2495C' }
+      
+  - type: series-to-color
+    series: vm_status
+    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-11"] path'
+    thresholds:
+      - { value: 0, color: '#73BF69' }
+      - { value: 1, color: '#F2CC0C' }
+      - { value: 2, color: '#F2495C' }
+
+  # Règle 2: Animer les flèches principales pour montrer le flux de données
+  # On utilise l'animation 'flow' qui simule un déplacement le long de la ligne
+  - type: series-to-animation
+    series: flow_logs_per_sec
+    # On cible directement le 'path' du connecteur
+    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-51"] path'
+    animation:
+      name: flow
+      speed: 30
+    # L'animation se déclenche uniquement si le flux est supérieur à 0
+    thresholds:
+      - { value: 0 }
+
+  - type: series-to-animation
+    series: flow_alerts_per_sec
+    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-54"] path'
+    animation:
+      name: flow
+      speed: 25
+    thresholds:
+      - { value: 0 }
+
+  # Règle 3: Changer la couleur des flèches en fonction du débit
+  # On utilise le 'stroke' pour changer la couleur du trait de la flèche
+  - type: series-to-color
+    series: flow_metrics_per_sec
+    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-13"] path'
+    # Appliquer la couleur au trait et non au remplissage
+    attribute: stroke 
+    thresholds:
+      - { value: 0, color: '#33A2E5' }     # Bleu pour un débit faible
+      - { value: 1000, color: '#F2CC0C' } # Jaune pour un débit moyen
+      - { value: 5000, color: '#F2495C' } # Rouge pour un débit élevé
+
+  # Règle 4: Mettre à jour un texte pour afficher une valeur en direct
+  # On cible la balise <div> qui contient le texte à l'intérieur de l'objet SVG
+  - type: series-to-text
+    series: alertmanager_active_alerts
+    # On cible le texte "Alertmanager" pour le remplacer par la valeur
+    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-52"] div'
+    # Remplace le contenu par la valeur formatée par Grafana (ex: "15 Alerts")
+    value: current-formatted
