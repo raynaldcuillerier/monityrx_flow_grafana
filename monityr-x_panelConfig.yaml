@@ -1,38 +1,50 @@
 ---
 
+# -----------------------------------------------------------------------------
+# MAPPINGS : C'est la seule section dont nous avons vraiment besoin.
+# Elle contient la liste de toutes les règles pour piloter le SVG.
+# -----------------------------------------------------------------------------
 mappings:
-  # Règle pour le STATUT de Kafka (couleur)
+  # Règle pour le STATUT de Kafka (couleur de l'icône)
   - type: series-to-color
-    series: kafka_status
-    # Sélecteur corrigé pour cibler le <path> à l'intérieur du groupe
-    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-19"] path'
+    series: kafka_status # Doit correspondre à l'alias de votre requête Grafana
+    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-19"] path' # Cible l'icône Kafka
     thresholds:
-      - { value: 0, color: '#F2495C' } # Rouge
-      - { value: 1, color: '#73BF69' } # Vert
+      - { value: 0, color: '#F2495C' } # Rouge si la valeur est 0
+      - { value: 1, color: '#73BF69' } # Vert si la valeur est 1
 
-  # Règle pour le NOMBRE DE TOPICS (texte)
+  # Règle pour le STATUT de Zookeeper (couleur de l'icône)
+  - type: series-to-color
+    series: zk_up
+    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-41"] path'
+    thresholds:
+      - { value: 0, color: '#F2495C' }
+      - { value: 1, color: '#73BF69' }
+
+  # Règle pour l'animation de la flèche des LOGS
+  - type: series-to-animation
+    series: flow_logs_per_sec
+    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-51"] path'
+    animation:
+      name: flow       # Fait "bouger" la ligne
+      speed: 30
+    thresholds:
+      - { value: 0 }    # Se déclenche si la valeur est > 0
+
+  # Règle pour afficher le nombre de topics KAFKA (texte)
   - type: series-to-text
     series: kafka_total_topics
-    # On cible un des chemins dans l'icône
     selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-19"] path:nth-of-type(2)'
+    # Options pour styliser et positionner le texte
     text:
-      x: 39      # Coordonnées ajustées pour le centre de l'icône Kafka
+      x: 39
       y: 322
       'text-anchor': middle
       'font-size': '14px'
       fill: 'white'
-    prefix: 'Topics: '
+    prefix: 'Topics: '  # Ajoute "Topics: " avant la valeur
     value: current-formatted
 
-  # Règle pour le NOMBRE DE MESSAGES (texte)
-  - type: series-to-text
-    series: kafka_total_messages
-    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-19"] path:nth-of-type(3)'
-    text:
-      x: 39
-      y: 350
-      'text-anchor': middle
-      'font-size': '14px'
-      fill: 'white'
-    prefix: 'Msg: '
-    value: current-formatted # Utilise la valeur formatée (avec k, M, etc.)
+# --- FIN DE LA CONFIGURATION ---
+# Tout le reste du fichier d'exemple (test, zoomPanPinch, tagConfig, etc.)
+# peut être ignoré pour votre cas d'usage.
