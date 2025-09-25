@@ -1,3 +1,5 @@
+---
+
 # Liste des règles de mapping entre les données et le SVG
 mappings:
   # Règle 1: Colorer les composants principaux en fonction de leur statut
@@ -86,4 +88,5 @@ mappings:
     # Remplace le contenu par la valeur formatée par Grafana (ex: "15 Alerts")
 
     value: current-formatted
+
 
