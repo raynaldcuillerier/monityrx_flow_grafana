@@ -4,7 +4,7 @@ mappings:
   # On utilise le 'fill' pour changer la couleur de fond des icônes/formes
   - type: series-to-color
     series: kafka_status
-    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-19"] path'
+    selector: '[data-cell-id="cell-z0Z9Q-BWpyTF2NEFeLIu-19"] path'
     thresholds:
       - { value: 0, color: '#73BF69' } # Vert = OK
       - { value: 1, color: '#F2CC0C' } # Jaune = Warning
@@ -13,7 +13,7 @@ mappings:
   # NOUVELLE RÈGLE POUR ZOOKEEPER
   - type: series-to-color
     series: zk_up
-    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-41"] path'
+    selector: '[data-cell-id="cell-z0Z9Q-BWpyTF2NEFeLIu-41"] path'
     thresholds:
       - { value: 0, color: '#F2495C' } # Rouge si la valeur est 0 (down)
       - { value: 1, color: '#73BF69' } # Vert si la valeur est 1 (up)
@@ -86,3 +86,4 @@ mappings:
     # Remplace le contenu par la valeur formatée par Grafana (ex: "15 Alerts")
 
     value: current-formatted
+
