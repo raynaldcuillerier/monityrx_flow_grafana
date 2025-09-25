@@ -10,6 +10,14 @@ mappings:
       - { value: 1, color: '#F2CC0C' } # Jaune = Warning
       - { value: 2, color: '#F2495C' } # Rouge = Critical
 
+  # NOUVELLE RÈGLE POUR ZOOKEEPER
+  - type: series-to-color
+    series: zk_up
+    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-41"] path'
+    thresholds:
+      - { value: 0, color: '#F2495C' } # Rouge si la valeur est 0 (down)
+      - { value: 1, color: '#73BF69' } # Vert si la valeur est 1 (up)
+      
   - type: series-to-color
     series: coraline_status
     selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-21"] path'
@@ -76,4 +84,5 @@ mappings:
     # On cible le texte "Alertmanager" pour le remplacer par la valeur
     selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-52"] div'
     # Remplace le contenu par la valeur formatée par Grafana (ex: "15 Alerts")
+
     value: current-formatted
