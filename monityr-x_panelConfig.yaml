@@ -1,50 +1,235 @@
 ---
 
-# -----------------------------------------------------------------------------
-# MAPPINGS : C'est la seule section dont nous avons vraiment besoin.
-# Elle contient la liste de toutes les règles pour piloter le SVG.
-# -----------------------------------------------------------------------------
-mappings:
-  # Règle pour le STATUT de Kafka (couleur de l'icône)
-  - type: series-to-color
-    series: kafka_status # Doit correspondre à l'alias de votre requête Grafana
-    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-19"] path' # Cible l'icône Kafka
-    thresholds:
-      - { value: 0, color: '#F2495C' } # Rouge si la valeur est 0
-      - { value: 1, color: '#73BF69' } # Vert si la valeur est 1
+#------------------------------------------------------------------------------
+# YAML Aliases to simplify maintenance
 
-  # Règle pour le STATUT de Zookeeper (couleur de l'icône)
-  - type: series-to-color
-    series: zk_up
-    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-41"] path'
-    thresholds:
-      - { value: 0, color: '#F2495C' }
-      - { value: 1, color: '#73BF69' }
+anchorLinks:
+  - link: &grafana-home
+      url: "https://grafana.com/"
+      params: "time"
+  - flowAnimation: &flow-slow
+      thresholdOffValue: 2
+      thresholdLwrValue: 10
+      thresholdLwrDurationSecs: 1
+      thresholdUprValue: 100
+      thresholdUprDurationSecs: 0.1
 
-  # Règle pour l'animation de la flèche des LOGS
-  - type: series-to-animation
-    series: flow_logs_per_sec
-    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-51"] path'
-    animation:
-      name: flow       # Fait "bouger" la ligne
-      speed: 30
-    thresholds:
-      - { value: 0 }    # Se déclenche si la valeur est > 0
+#------------------------------------------------------------------------------
+# Panel Config
 
-  # Règle pour afficher le nombre de topics KAFKA (texte)
-  - type: series-to-text
-    series: kafka_total_topics
-    selector: '[data-cell-id="z0Z9Q-BWpyTF2NEFeLIu-19"] path:nth-of-type(2)'
-    # Options pour styliser et positionner le texte
-    text:
-      x: 39
-      y: 322
-      'text-anchor': middle
-      'font-size': '14px'
-      fill: 'white'
-    prefix: 'Topics: '  # Ajoute "Topics: " avant la valeur
-    value: current-formatted
+test:
+  testDataBaseOffset: 1
+  
+cellIdPreamble: "cell-"
+gradientMode: "hue"
+cells: 
+  KAFKA:
+    link:
+      url: "https://app.diagrams.net/?p=svgdata"
+    dataRef: "toalMsgKAFKA"
+    label:
+      separator: "cr"
+      units: "short"
+      unitsPostfix: "msg"
+    labelColor:
+      gradientMode: "hue"
+      #thresholds:
+        #- {color: "red", level: 0}
+        #- {color: "green", level: 1}
+    fillColor:
+      thresholds:
+        - {color: "semi-dark-red", level: 0}
+        - {color: "semi-dark-green", level: 1}
 
-# --- FIN DE LA CONFIGURATION ---
-# Tout le reste du fichier d'exemple (test, zoomPanPinch, tagConfig, etc.)
-# peut être ignoré pour votre cas d'usage.
+  LogsAlgorilla:
+    dataRef: "totalLogs"
+    label:
+      separator: "colon"
+    labelColor:
+      gradientMode: "hue"
+      thresholds:
+        - {color: "red", level: 0}
+        - {color: "_", level: 1}
+
+  AlertsAlgorilla:
+    dataRef: "totalAlerts"
+    label:
+      separator: "colon"
+      units: "short"
+    labelColor:
+      gradientMode: "hue"
+      thresholds:
+        - {color: "red", level: 0}
+        - {color: "_", level: 1}
+
+  Grafana:
+    dataRef: "grafanaUp"
+    label:
+    labelColor:
+      gradientMode: "hue"
+      thresholds:
+        - {color: "red", level: 0}
+        - {color: "green", level: 1}
+
+  AlertRules:
+    link:
+      url: "http://192.168.10.232:3000/d/LzldHAVnz/victoriametrics-vmalert"
+    dataRef: "alertingRules"
+    label:
+      separator: "replace"
+      units: "short"
+      unitsPostfix: "Alerting Rules"
+    labelColor:
+      gradientMode: "hue"
+      thresholds:
+        #- {color: "red", level: 0}
+        #- {color: "green", level: 1}
+
+  ALERTMANAGER:
+    link:
+      url: "http://192.168.10.232:3000/d/4HhbN1BZk/zookeeper-exporter-dabealu"
+    dataRef: "alertmanagerUp"
+    label:
+      separator: "colon"
+      units: "short"
+      unitsPostfix: "UP"
+    labelColor:
+      gradientMode: "hue"
+      #thresholds:
+        #- {color: "red", level: 0}
+        #- {color: "green", level: 1}
+
+
+  AlertsToCoraline:
+    link:
+      url: "http://192.168.10.232:3000/d/eea-9_sik/alertmanager"
+    dataRef: "activeAlert"
+    label:
+      separator: "replace"
+      units: "short"
+      unitsPostfix: "Active Alerts"
+    labelColor:
+      gradientMode: "hue"
+      thresholds:
+        #- {color: "red", level: 0}
+        #- {color: "green", level: 1}
+
+  ZOOKEEPER:
+    link:
+      url: "http://192.168.10.232:3000/d/4HhbN1BZk/zookeeper-exporter-dabealu"
+    dataRef: "zk_up"
+    #label:
+      #separator: "cr"
+      #units: "short"
+      #unitsPostfix: "(msg)"
+    labelColor:
+      gradientMode: "hue"
+      #thresholds:
+        #- {color: "red", level: 0}
+        #- {color: "green", level: 1}
+    fillColor:
+      thresholds:
+        - {color: "semi-dark-red", level: 0}
+        - {color: "semi-dark-green", level: 1}
+
+  CORALINE:
+    link:
+      url: "http://192.168.10.230:18630/"
+    dataRef: "hbCoraline"
+    label:
+      separator: "space"
+      units: "short"
+      unitsPostfix: ")"
+    labelColor:
+      gradientMode: "hue"
+      thresholds:
+        - {color: "red", level: 0}
+        - {color: "green", level: 1}
+    fillColor:
+      thresholds:
+        - {color: "semi-dark-red", level: 0}
+        - {color: "semi-dark-green", level: 1}
+    #fillLevel:
+      #thresholdLwrFillPercent: 100
+      #thresholdUprFillPercent: 0
+      #thresholdLwrValue: 0
+      #thresholdUprValue: 1000
+      f#illDirection: 'bottomToTop'
+
+  ELK:
+    link:
+      url: "http://192.168.10.232:3000/d/n_nxrE_mk/elasticsearch"
+    dataRef: "elk_cluster_status"
+    label:
+      #separator: "cr"
+      #units: "short"
+      #unitsPostfix: "(msg)"
+    fillColor:
+      thresholds:
+        - {color: "semi-dark-green", level: 1}
+        - {color: "semi-dark-yellow", level: 2}
+        - {color: "semi-dark-red", level: 3}
+
+  ELKdocs:
+    dataRef: "totalELKdocs"
+    label:
+      separator: "replace"
+      #units: "short"
+      unitsPostfix: "docs"
+    labelColor:
+      gradientMode: "hue"
+      #thresholds:
+        #- {color: "red", level: 0}
+        #- {color: "green", level: 1}
+
+  VICTORIAMETRICS:
+    link:
+      url: "http://192.168.10.232:3000/d/4HhbN1BZk/zookeeper-exporter-dabealu"
+    dataRef: "rateVM"
+    label:
+      separator: "replace"
+      units: "short"
+      unitsPostfix: "data/s"
+      decimalPoints: 2
+    fillColor:
+      thresholds:
+        - {color: "semi-dark-red", level: 0}
+        - {color: "semi-dark-green", level: 2}
+
+  ALERTS_OTHERS:
+    dataRef: "alertsOtherSources"
+    label:
+      separator: "colon"
+      units: "short"
+      #unitsPostfix: "docs"
+    labelColor:
+      gradientMode: "hue"
+      thresholds:
+        - {color: "red", level: 0}
+        - {color: "_", level: 1}
+
+  LogsToCoraline:
+    dataRef: "logsInput"
+    label:
+      separator: "colon"
+      units: "short"
+      #unitsPostfix: "docs"
+    labelColor:
+      gradientMode: "hue"
+      thresholds:
+        - {color: "red", level: 0}
+        - {color: "_", level: 1}
+
+  Dictionnaries:
+    dataRef: "timeExecDict"
+    label:
+      separator: "cr"
+      units: "short"
+      unitsPostfix: "s (avg. exec time)"
+      decimalPoints: 3
+    labelColor:
+      gradientMode: "hue"
+      thresholds:
+        - {color: "_", level: 0.000}
+        - {color: "light-orange", level: 1.500}
+        - {color: "light-red", level: 3.000}
